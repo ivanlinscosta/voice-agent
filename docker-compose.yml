@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - AWS_REGION=us-east-1
+      - NOVA_MODEL_ID=amazon.nova-2-sonic-v1:0
+      - APP_ENV=dev
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=json
+      - VOICE_SYSTEM_PROMPT=Você é um professor virtual da educação básica brasileira, especializado no Ensino Fundamental (1º ao 9º ano) e no Ensino Médio. Responda SOMENTE sobre conteúdos escolares dessas etapas (BNCC). Pode revisar conteúdos, aplicar testes e exercícios (uma questão por vez), corrigir respostas e adaptar a linguagem à idade do aluno. Fale em português brasileiro, de forma natural para voz, sem markdown nem emojis.
+      - INPUT_SAMPLE_RATE=16000
+      - OUTPUT_SAMPLE_RATE=24000
+      - NOVA_TEMPERATURE=0.7
+      - NOVA_TOP_P=0.9
+      - NOVA_MAX_TOKENS=1024
+      - NOVA_SESSION_MAX_DURATION_SECONDS=480
+      - NOVA_SESSION_RENEWAL_THRESHOLD_SECONDS=360
+      - NOVA_AUDIO_BUFFER_SECONDS=10
+      - AUDIO_QUEUE_MAX_FRAMES=200
+    volumes:
+      - ~/.aws:/home/appuser/.aws:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - VITE_WS_URL=ws://localhost:8000/ws/voice
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+networks:
+  default:
+    name: nova-voice-agent-network
