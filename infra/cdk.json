@@ -1,0 +1,8 @@
+{
+  "app": "python3 app.py",
+  "context": {
+    "@aws-cdk/aws-ec2:defaultVpcCidr": "10.0.0.0/16",
+    "@aws-cdk/aws-ecs:enableDefaultLogDriver": true,
+    "@aws-cdk/aws-lambda:recognizeVersionProps": true
+  }
+}
