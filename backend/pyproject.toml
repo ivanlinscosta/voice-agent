@@ -1,0 +1,90 @@
+[project]
+name = "nova-voice-agent-backend"
+version = "0.1.0"
+description = "Backend for Amazon Nova 2 Sonic Voice Agent"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "websockets>=12.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "python-dotenv>=1.0.0",
+    "aws-sdk-bedrock-runtime[awscrt]>=0.11.0",
+    "aws-credentials-http>=0.3.0",
+    "smithy-aws-core>=0.1.0",
+    "smithy-http[awscrt]>=0.5.0",
+    "boto3>=1.34.0",
+    "botocore>=1.34.0",
+    "structlog>=24.1.0",
+    "python-json-logger>=2.0.7",
+    "opentelemetry-api>=1.22.0",
+    "opentelemetry-sdk>=1.22.0",
+    "opentelemetry-exporter-otlp>=1.22.0",
+    "opentelemetry-instrumentation-fastapi>=0.42b0",
+    "opentelemetry-instrumentation-aws-lambda>=0.42b0",
+    "prometheus-client>=0.19.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "httpx>=0.26.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "httpx>=0.26.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "ANN", "SIM", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "ARG", "PTH", "ERA", "PL", "TRY", "NPY", "PERF", "FURB", "ISC", "ICN", "LOG", "TID", "PD", "PGH", "EXE"]
+ignore = ["S101", "ARG001", "ARG002", "B008", "C408", "ERA001", "FURB101", "FURB142", "ISC001", "ISC002", "ISC003", "PERF401", "PLR0913", "PLR0917", "PLW0603", "PTH123", "RET503", "RSE102", "SLF001", "T201", "T203", "TRY003", "UP007", "UP035"]
+per-file-ignores = { "tests/*" = ["S101", "ERA001", "FURB101", "ISC001", "ISC002", "ISC003", "ARG001", "ARG002", "PLR2004"] }
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = true
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --cov=app --cov-report=term-missing"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
